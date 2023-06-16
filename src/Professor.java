@@ -62,11 +62,11 @@ public class Professor {
             prof.getLetters().add(letterToProfs);
         }
     }
-    public void writeToStu() {
+    public void writeToStu(Professor professor) {
         Scanner writeToStu = new Scanner(System.in);
         System.out.println("enter your letter to students");
         String letterToStudents = writeToStu.nextLine();
-        for (Course course : this.getProfCourse()) {
+        for (Course course : professor.getProfCourse()) {
             for (Student student : course.getCourseStus()) {
                 student.getLetters().add(letterToStudents);
             }
@@ -87,10 +87,17 @@ public class Professor {
         Scanner setGrades = new Scanner(System.in);
         for (Course course : professor.getProfCourse()) {
             for (Student student : course.getCourseStus()) {
-                System.out.println("what is your desired grade of" + course.getCourseName() + "for " + student.getName());
+                System.out.println("what is your desired grade of " + course.getCourseName() + " for " + student.getName());
                 double grade = setGrades.nextDouble();
                 student.getGrades().put(course , grade);
+                System.out.println("the grades for this student set");
             }
+        }
+    }
+
+    public void seeCourses(Professor professor) {
+        for (Course course : professor.getProfCourse()) {
+            System.out.println(course.getCourseName());
         }
     }
 }

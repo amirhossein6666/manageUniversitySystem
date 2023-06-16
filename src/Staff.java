@@ -240,6 +240,10 @@ public class Staff {
     }
 
     public static void addCourse() {
+        if (Staff.getProfessors().size() == 0){
+            System.out.println("add a professor first ");
+            addProfessor();
+        }
         int flag = 1;
         Scanner addCourse = new Scanner(System.in);
         System.out.println("enter the course name");
@@ -287,9 +291,12 @@ public class Staff {
         for (int i = 0; i < getSemesters().size(); i++) {
             if (getSemesters().get(i).getStatus().equals("ongoing")) {
                 getSemesters().get(i).getCourseList().add(course);
-                for (Professor professor : getSemesters().get(i).getProfList()) {
-                    professor.getProfCourse().add(course);
-                }
+            }
+        }
+        for (Professor professor : getProfessors()) {
+            if (professor.getId() == profId) {
+                professor.getProfCourse().add(course);
+                break;
             }
         }
     }
@@ -345,7 +352,7 @@ public class Staff {
             if (semester.getStatus().equals("ongoing")) {
                 for (Student student: semester.getStudentList()) {
                     double sum = student.getGrades().keySet().stream().mapToDouble(course -> (course.getCredit() * student.getGrades().get(course))).sum();
-                    student.setAvgGrades(sum / student.calculateSumOfCradits(student));
+                    student.setAvgGrades(sum / student.getTotalCredit());
                 }
 
             }

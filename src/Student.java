@@ -4,7 +4,7 @@ public class Student {
     private String name;
 
     private int id;
-    private int totalCredit;
+    private int totalCredit = 0;
 
     private List<String> letters;
     private String password;
@@ -59,61 +59,74 @@ public class Student {
     }
 
     public void enroll(Student student) {
-        int flag1 = 0;
-        int flag2 = 0;
-        int flag3 = 0;
+        if (Staff.getCourses().size() == 0) {
+            System.out.println("there is no course for enroll");
+            Main.studentMenu(student);
+        }
+        int flag = 0;
+        boolean temp = false;
+        boolean temp2 = false;
+        Staff.getCourses().forEach(course -> System.out.println(course.getCourseName() + "->" + course.getId()));
         Scanner enroll = new Scanner(System.in);
-        do {
-            System.out.println("enter your desired course ID");
-            int courseId = enroll.nextInt();
-            int indexOFCourseID = 0;
-            for (int i = 0; i < Staff.getCourses().size(); i++) {
-                if (courseId == Staff.getCourses().get(i).getId()) {
-                    indexOFCourseID = i;
-                    break;
+        System.out.println("please enter your desired course id ");
+        int courseID = enroll.nextInt();
+        for (Course Course : Staff.getCourses()) {
+            if (courseID == Course.getId()) {
+                flag = 1;
+                break;
+            }
+        }
+        if (flag == 0) {
+            System.out.println("this course doesn't exist");
+            enroll(student);
+        }
+        else {
+            flag = 0;
+            for(Course course : Staff.getCourses()) {
+                if (course.getId() == courseID) {
+                    temp = isConflict(course , student);
                 }
             }
-            for (Course course : Staff.getCourses()) {
-                if (course.getId() == courseId) {
-                    flag1 = 1;
-                    break;
-                }
+            if (temp) {
+                System.out.println("this course has conflict with your other course ");
+                enroll(student);
             }
-            if (flag1 == 0)
-                System.out.println("this course doesn't exists");
-            if (flag1 == 1) {
-                for (Course course : student.getStudentCourses()) {
-                    flag2 = 0;
-                    if (!(Staff.getCourses().get(indexOFCourseID).getClassDay().equals(course.getClassDay()))) {
-                        if (!((Staff.getCourses().get(indexOFCourseID).getClassStart() > course.getClassStart() && Staff.getCourses().get(indexOFCourseID).getClassStart() <
-                                course.getClassStart() + 200) || (Staff.getCourses().get(indexOFCourseID).getClassStart() + 200 > course.getClassStart() &&
-                                Staff.getCourses().get(indexOFCourseID).getClassStart() + 200 < course.getClassStart() + 200))) {
-                            if (!((Staff.getCourses().get(indexOFCourseID).getExamStart() > course.getExamStart() && Staff.getCourses().get(indexOFCourseID).getExamStart() < course.getExamEnd())
-                                    || (Staff.getCourses().get(indexOFCourseID).getExamEnd() > course.getExamStart()) && Staff.getCourses().get(indexOFCourseID).getExamEnd() < course.getExamEnd())) {
-                                flag2 = 1;
-                            }
+            if (!temp) {
+                flag = 1;
+            }
+            if (flag == 1) {
+                flag = 0;
+                for (Course course : Staff.getCourses()){
+                    if (course.getId() == courseID) {
+                        if (student.getTotalCredit() < 20 && 20 - student.getTotalCredit() >= course.getCredit()){
+                            flag = 1;
+                            break;
+                        }
+                        else {
+                            System.out.println("you are enroll in maximum of Allowed credits");
+                            Main.studentMenu(student);
                         }
                     }
-                    if (flag2 == 0) {
-                        System.out.println("this course is conflicted with your other course");
-                        break;
-                    }
                 }
             }
-            if (student.getTotalCredit() < 20 && Staff.getCourses().get(indexOFCourseID).getCredit() < 20 - student.getTotalCredit()) {
-                flag3 = 1;
+        }
+        for (Course course : Staff.getCourses()) {
+            flag = 0;
+            if (courseID == course.getId()) {
+                flag = 1;
+                student.getStudentCourses().add(course);
+                student.getGrades().put(course , 0.00);
+                student.setTotalCredit(student.getTotalCredit() + course.getCredit());
+                course.getCourseStus().add(student);
+                Main.studentMenu(student);
             }
-            if (flag3 == 0)
-                System.out.println("you can't enroll in more than 20 credit");
-        } while (flag1 == 1 && flag2 == 1 && flag3 == 1);
-
+        }
     }
-
-    public void writeToProf() {
+    public void writeToProf(Student student) {
         Scanner writeToProf = new Scanner(System.in);
         System.out.println("enter your letter for professor");
         String letterToProf = writeToProf.nextLine();
-        this.getGrades().keySet().forEach(course -> {
+        student.getGrades().keySet().forEach(course -> {
             for (Professor professor : Staff.getProfessors()) {
                 if (professor.getId() == course.getProfId()) {
                     professor.getLetters().add(letterToProf);
@@ -142,7 +155,20 @@ public class Student {
         student.getLetters().forEach(System.out::println);
     }
 
-    public int calculateSumOfCradits(Student student) {
-        return student.getGrades().keySet().stream().mapToInt(Course::getCredit).sum();
+    public boolean isConflict(Course course , Student student) {
+        boolean conflict = false;
+        for (Course course1 : student.getStudentCourses()) {
+            if (course.getClassDay().equals(course1.getClassDay())) {
+                if ((course.getClassStart() > course1.getClassStart() && course.getClassStart() < course1.getClassStart() + 200))
+                    conflict = true;
+                if (course.getClassStart() + 200 > course1.getClassStart() && course.getClassStart() +200 < course1.getClassStart() + 200)
+                    conflict = true;
+            }
+            if (course.getExamStart() > course1.getExamStart() && course.getExamStart() < course1.getExamEnd())
+                conflict = true;
+            if (course.getExamEnd() > course1.getExamStart() && course.getExamEnd() < course1.getExamEnd())
+                conflict = true;
+        }
+        return conflict;
     }
 }

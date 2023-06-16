@@ -42,7 +42,7 @@ public class Main {
     public static void staff() {
         Scanner staff = new Scanner(System.in);
         try {
-            RandomAccessFile rfile = new RandomAccessFile("data.txt" , "rw");
+            RandomAccessFile rfile = new RandomAccessFile("data.txt", "rw");
             printStaffMenu();
             int staffChoice = staff.nextInt();
             switch (staffChoice) {
@@ -119,18 +119,19 @@ public class Main {
         System.out.println("please enter your id");
         int profID = profSignIn.nextInt();
         System.out.println("please enter your password");
-        String  profPass = profSignIn.next();
+        String profPass = profSignIn.next();
         for (Professor professor : Staff.getProfessors()) {
             if (profID == professor.getId() && profPass.equals(professor.getPassword())) {
                 flag = 1;
                 professorMenu(professor);
             }
         }
-        if (flag == 0){
+        if (flag == 0) {
             System.out.println("your id and password doesn't match");
             professorSignIn();
         }
     }
+
     public static void professorMenu(Professor professor) {
         Scanner profMenu = new Scanner(System.in);
         printProfMenu();
@@ -141,7 +142,7 @@ public class Main {
                 professorMenu(professor);
             }
             case 2 -> {
-                professor.writeToStu();
+                professor.writeToStu(professor);
                 professorMenu(professor);
             }
             case 3 -> {
@@ -154,6 +155,10 @@ public class Main {
             }
             case 5 -> {
                 professor.setGrades(professor);
+                professorMenu(professor);
+            }
+            case 6 -> {
+                professor.seeCourses(professor);
                 professorMenu(professor);
             }
             case 0 -> enter();
@@ -171,6 +176,7 @@ public class Main {
         System.out.println("3 : letter to Staff");
         System.out.println("4 : see letters");
         System.out.println("5 : set grades of Students");
+        System.out.println("6 : see your courses");
         System.out.println("0 : come Back to Main Menu");
     }
 
@@ -183,7 +189,7 @@ public class Main {
             System.out.println("please enter your password");
             String stuPass = stuSignIn.next();
             for (Student student : Staff.getStudents()) {
-                if(student.getId() == stuID && student.getPassword().equals(stuPass)) {
+                if (student.getId() == stuID && student.getPassword().equals(stuPass)) {
                     flag = 1;
                     studentMenu(student);
                     break;
@@ -194,7 +200,7 @@ public class Main {
         }
     }
 
-    private static void studentMenu(Student student) {
+    public static void studentMenu(Student student) {
         printStuMenu();
         Scanner stuMenu = new Scanner(System.in);
         int stuMeuChoice = stuMenu.nextInt();
@@ -208,7 +214,7 @@ public class Main {
                 studentMenu(student);
             }
             case 3 -> {
-                student.writeToProf();
+                student.writeToProf(student);
                 studentMenu(student);
             }
             case 4 -> {
@@ -217,6 +223,10 @@ public class Main {
             }
             case 5 -> {
                 student.letters(student);
+                studentMenu(student);
+            }
+            case 6 -> {
+                student.getStudentCourses().forEach(course -> System.out.println(course.getCourseName()));
                 studentMenu(student);
             }
             case 0 -> enter();
@@ -234,6 +244,7 @@ public class Main {
         System.out.println("3 : letter to professors");
         System.out.println("4 : letter to Staff");
         System.out.println("5 : see letters");
+        System.out.println("6 :  see list of enrolled course");
         System.out.println("0 : Come Back to Main Menu");
     }
 
