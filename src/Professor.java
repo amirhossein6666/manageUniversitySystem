@@ -7,7 +7,7 @@ public class Professor {
     private int id;
     private String facultyName;
     private String password;
-    private int numOfGrades;
+    private int numOfGrades = 0;
     private List<String> letters;
     private List<Course> profCourse;
     private  List<Professor> professors;
@@ -90,6 +90,7 @@ public class Professor {
                 System.out.println("what is your desired grade of " + course.getCourseName() + " for " + student.getName());
                 double grade = setGrades.nextDouble();
                 student.getGrades().put(course , grade);
+                professor.setNumOfGrades(professor.getNumOfGrades() + 1);
                 System.out.println("the grades for this student set");
             }
         }

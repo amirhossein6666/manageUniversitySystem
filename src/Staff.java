@@ -2,6 +2,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Staff {
     private static ArrayList<Professor> professors = new ArrayList<>();
@@ -101,10 +102,10 @@ public class Staff {
                 System.out.println("this semester id is invalid");
             }
         }
-        getProfessors().add(professor);
         for (Professor professor1 : getProfessors()) {
             professor1.getProfessors().add(professor1);
         }
+        getProfessors().add(professor);
     }
 
 
@@ -348,30 +349,20 @@ public class Staff {
     }
 
     public static void calculateAvgGrades() {
-        for (Semester semester: getSemesters()) {
-            if (semester.getStatus().equals("ongoing")) {
-                for (Student student: semester.getStudentList()) {
-                    double sum = student.getGrades().keySet().stream().mapToDouble(course -> (course.getCredit() * student.getGrades().get(course))).sum();
-                    student.setAvgGrades(sum / student.getTotalCredit());
-                }
-
+        double sum = 0;
+        for (Student student : Staff.getStudents()) {
+            for (Course course: student.getGrades().keySet()) {
+                sum += course.getCredit() * student.getGrades().get(course);
             }
+            student.setAvgGrades(sum / student.getTotalCredit());
         }
     }
 
     public static boolean checkAllGrades() {
         int sum = 0;
-        int sum2 = 0;
-        for (Semester semester :getSemesters()) {
-            if (semester.getStatus().equals("ongoing")) {
-                for (Professor professor : semester.getProfList()) {
-                    sum += professor.getNumOfGrades();
-                }
-                for (Course course : semester.getCourseList()) {
-                    sum2 += course.getCourseStus().size();
-                }
-            }
+        for (Professor professor : Staff.getProfessors()) {
+            sum += professor.getNumOfGrades();
         }
-        return sum2 == sum;
+        return sum == Staff.getStudents().size();
     }
 }
