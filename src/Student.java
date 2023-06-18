@@ -5,14 +5,14 @@ public class Student {
 
     private int id;
     private int totalCredit = 0;
-
+    private boolean isPass;
     private List<String> letters;
     private String password;
     private Double avgGrades;
     private Map<Course, Double> grades;
     private List<Course> StudentCourses;
 
-    public Student(String name, int id, String password, int totalCredit) {
+    public Student(String name, int id, String password, int totalCredit , Double avgGreades , boolean isPass) {
         this.name = name;
         this.id = id;
         this.password = password;
@@ -20,42 +20,46 @@ public class Student {
         this.grades = new HashMap<>();
         this.StudentCourses = new ArrayList<>();
         this.totalCredit = totalCredit;
+        this.avgGrades = avgGreades;
+        this.isPass = isPass;
     }
 
     public String getName() {
         return name;
     }
-
+    public boolean getIsPass() {
+        return isPass;
+    }
+    public void setIsPass(boolean isPass) {
+        this.isPass = isPass;
+    }
     public int getId() {
         return id;
     }
-
     public String getPassword() {
         return password;
     }
-
     public int getTotalCredit() {
         return totalCredit;
     }
-
     public void setTotalCredit(int totalCredit) {
         this.totalCredit = totalCredit;
     }
-
     public List<String> getLetters() {
         return letters;
     }
-
     public List<Course> getStudentCourses() {
         return StudentCourses;
     }
-
     public Map<Course, Double> getGrades() {
         return grades;
     }
-
     public void setAvgGrades(Double avgGrades) {
         this.avgGrades = avgGrades;
+    }
+
+    public Double getAvgGrades() {
+        return avgGrades;
     }
 
     public void enroll(Student student) {

@@ -157,7 +157,7 @@ public class Staff {
 
         System.out.println("enter the Student pass");
         String stupass = addStudent.next();
-        Student student = new Student(studentName, studentId, stupass , 0);
+        Student student = new Student(studentName, studentId, stupass , 0 , 0.0 , false);
         getStudents().add(student);
         for (Semester semester: getSemesters()) {
             if (semester.getStatus().equals("ongoing"))
@@ -355,14 +355,23 @@ public class Staff {
                 sum += course.getCredit() * student.getGrades().get(course);
             }
             student.setAvgGrades(sum / student.getTotalCredit());
+            Scanner isPass = new Scanner(System.in);
+            System.out.println("what is the minimum grades for pass the course");
+            int minForPass = isPass.nextInt();
+            student.setIsPass(student.getAvgGrades() >= minForPass);
+            sum = 0;
         }
     }
 
     public static boolean checkAllGrades() {
-        int sum = 0;
+        int sum1 = 0;
+        int sum2 = 0;
         for (Professor professor : Staff.getProfessors()) {
-            sum += professor.getNumOfGrades();
+            sum1 += professor.getNumOfGrades();
+            for (Course course: professor.getProfCourse()) {
+                sum2 += course.getCourseStus().size();
+            }
         }
-        return sum == Staff.getStudents().size();
+        return sum1 == sum2;
     }
 }
